@@ -1,0 +1,13 @@
+{
+  "Colors": { "Favorite": "blue" },
+  "ConnectionStrings": {
+    "DutchConnStr": "server=(localdb)\\ProjectsV13;Database=DutchTreatDb;Integrated Security=true;MultipleActiveResultSets=true"
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "DutchTreat": "Information",
+      "Microsoft": "Warning"
+    }
+  }
+}
