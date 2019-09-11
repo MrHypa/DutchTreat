@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using DutchTreat.ViewModels;
 using DutchTreat.Services;
 using DutchTreat.Data;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DutchTreat.Controllers
 {
@@ -38,13 +39,13 @@ namespace DutchTreat.Controllers
             if (ModelState.IsValid)
             {
                 //send the email
-                _mailService.SendMessage("jace@jacetech.com", model.Subject, $"From: {model.Name} - {model.Email}, Message: {model.Message} ");
+                _mailService.SendMessage($"jace@jacetech.com", model.Subject, $"From: {model.Name} - {model.Email}, Message: {model.Message} ");
                 ViewBag.UserMessage = "Mail Sent";
                 ModelState.Clear();
             }
             else
             {
-                //show the errors
+                //show the errors this is a demo project
                
             }
 
@@ -58,6 +59,7 @@ namespace DutchTreat.Controllers
             return View();
         }
 
+        [Authorize]
         public IActionResult Shop()
         {
             var results = _repository.GetAllProducts();

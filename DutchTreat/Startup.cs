@@ -7,6 +7,8 @@ using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Identity;
+using DutchTreat.Data.Entities;
 
 namespace DutchTreat
 {
@@ -23,6 +25,12 @@ namespace DutchTreat
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddIdentity<StoreUser, IdentityRole>(cfg =>
+            {
+                cfg.User.RequireUniqueEmail = true;
+
+            }).AddEntityFrameworkStores<DutchContext>();
+
             services.AddDbContext<DutchContext>(cfg =>
                 {
                     cfg.UseSqlServer(_config.GetConnectionString("DutchConnStr"));
@@ -56,6 +64,8 @@ namespace DutchTreat
             }
 
             app.UseStaticFiles();
+
+            app.UseAuthentication();
 
             app.UseNodeModules(env);
 

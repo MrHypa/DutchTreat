@@ -1,5 +1,6 @@
 ﻿using DutchTreat.Data.Entities;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -14,16 +15,18 @@ namespace DutchTreat.Data
     {
         private readonly DutchContext _ctx;
         private readonly IHostingEnvironment _hosting;
+        private readonly UserManager<StoreUser> _manager;
 
-        public DutchSeeder(DutchContext ctx, IHostingEnvironment hosting)
+        public DutchSeeder(DutchContext ctx, IHostingEnvironment hosting, UserManager<StoreUser> manager)
         {
             _ctx = ctx;
             _hosting = hosting;
+            _manager = manager;
         }
 
         public IHostingEnvironment Hosting { get; }
 
-        public void Seed()
+        public async Task SeedAsync()
         {
             //if (_hosting.IsDevelopment())
             //{
@@ -31,6 +34,27 @@ namespace DutchTreat.Data
             //}
 
             _ctx.Database.EnsureCreated(); //Check that the database actually exists
+
+            StoreUser user = await _manager.FindByEmailAsync("jace@jacetech.com");
+
+            if (user == null)
+            {
+                user = new StoreUser()
+                {
+                    FirstName = "Jason",
+                    LastName = "Thomson",
+                    Email = "Jace@jacetech.com",
+                    UserName = "jace2019"
+                };
+
+                var result = await _manager.CreateAsync(user, "P@ssw0rd!");
+
+                if (result != IdentityResult.Success)
+                {
+                    throw new InvalidOperationException("Unable to create user in seeder.");
+                }
+
+            }
 
             if (!_ctx.Products.Any()) //Make sure there are in fact existing products
             {
@@ -45,6 +69,7 @@ namespace DutchTreat.Data
                 var order = _ctx.Orders.Where(o => o.Id == 1).FirstOrDefault();
                 if (order != null)
                 {
+                    order.User = user;
                     order.Items = new List<OrderItem>()
                     {
                         new OrderItem()
